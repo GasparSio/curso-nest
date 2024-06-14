@@ -1,4 +1,13 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { ProductsService } from './products.service';
 
 @Controller('products')
@@ -10,15 +19,34 @@ export class ProductsController {
   //   return 'Hello from the products endpoint!';
   // }
   @Get()
-  getProductsWithDiferentQuerys(
+  async getAll(
     @Query('limit') limit: number = 100, //el 100 es el default value
     @Query('offset') offset: number = 0, //el 0 es el default value
-  ): string {
-    return `Hello from the products endpoint! With limit: ${limit} and offset: ${offset}`;
+  ): Promise<any> {
+    const products = await this.productsService.getAll(limit, offset);
+    return products;
   }
+
   //endpoint with only ONE parameter
   @Get(':productId')
-  getOneProduct(@Param('productId') productId: string): string {
-    return `Product with id ${productId}`;
+  async getOne(@Param('productId') productId: string): Promise<string> {
+    const product = await this.productsService.getOne(productId);
+    return product;
+  }
+
+  @Post()
+  async create(@Body() payload: any): Promise<any> {
+    const newProduct = await this.productsService.create(payload);
+    return newProduct;
+  }
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() payload: any): Promise<any> {
+    const productUpdated = await this.productsService.update(id, payload);
+    return productUpdated;
+  }
+  @Delete(':id')
+  async delete(@Param('id') id: string): Promise<any> {
+    const productDeleted = await this.productsService.delete(id);
+    return productDeleted;
   }
 }
