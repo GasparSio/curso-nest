@@ -9,7 +9,7 @@ export class ProductsController {
   // getProducts(): string {
   //   return 'Hello from the products endpoint!';
   // }
-  @Get('products')
+  @Get()
   getProductsWithDiferentQuerys(
     @Query('limit') limit: number = 100, //el 100 es el default value
     @Query('offset') offset: number = 0, //el 0 es el default value
@@ -17,7 +17,7 @@ export class ProductsController {
     return `Hello from the products endpoint! With limit: ${limit} and offset: ${offset}`;
   }
   //endpoint with only ONE parameter
-  @Get('products/:productId')
+  @Get(':productId')
   getOneProduct(@Param('productId') productId: string): string {
     return `Product with id ${productId}`;
   }
