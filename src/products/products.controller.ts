@@ -6,11 +6,13 @@ import {
   Param,
   Post,
   Put,
-  Query,
   HttpStatus,
   HttpCode,
+  HttpException,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
+import { Product } from './entities/product.entity';
 
 @Controller('products')
 export class ProductsController {
@@ -22,18 +24,17 @@ export class ProductsController {
   // }
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getAll(
-    @Query('limit') limit: number = 100, //el 100 es el default value
-    @Query('offset') offset: number = 0, //el 0 es el default value
-  ): Promise<any> {
-    const products = await this.productsService.getAll(limit, offset);
+  async getAll(): Promise<any> {
+    const products = await this.productsService.getAll();
     return products;
   }
 
   //endpoint with only ONE parameter
   @Get(':productId')
   @HttpCode(HttpStatus.ACCEPTED)
-  async getOne(@Param('productId') productId: string): Promise<string> {
+  async getOne(
+    @Param('productId', ParseIntPipe) productId: number,
+  ): Promise<Product> {
     const product = await this.productsService.getOne(productId);
     return product;
   }
@@ -46,13 +47,19 @@ export class ProductsController {
   }
   @Put(':id')
   @HttpCode(HttpStatus.OK)
-  async update(@Param('id') id: string, @Body() payload: any): Promise<any> {
-    const productUpdated = await this.productsService.update(id, payload);
-    return productUpdated;
+  async update(@Param('id') id: number, @Body() payload: any): Promise<any> {
+    const product = await this.productsService.getOne(id);
+    if (product) {
+      const productUpdated = await this.productsService.update(id, payload);
+      return productUpdated;
+    }
   }
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
   async delete(@Param('id') id: string): Promise<any> {
+    if (!id) {
+      throw new HttpException('Id not found', HttpStatus.BAD_REQUEST);
+    }
     const productDeleted = await this.productsService.delete(id);
     return productDeleted;
   }
