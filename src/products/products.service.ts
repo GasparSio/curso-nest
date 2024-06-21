@@ -32,10 +32,10 @@ export class ProductsService {
     const productsResult = this.products;
     return productsResult;
   }
-  getOne(productId: number): Product {
-    const product = this.products.find((product) => product.id === productId);
+  getOne(id: number): Product {
+    const product = this.products.find((product) => product.id === id);
     if (!product) {
-      throw new NotFoundException(`Product #${productId} not found`);
+      throw new NotFoundException(`Product id Nº${id} not found`);
     }
     return product;
   }
