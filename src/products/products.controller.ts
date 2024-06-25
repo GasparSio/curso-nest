@@ -13,7 +13,7 @@ import {
 import { ProductsService } from './products.service';
 import { Product } from './entities/product.entity';
 import { ParseIntPipe } from '../common/parse-int/parse-int.pipe';
-
+import { createProductDto, updateProductDto } from './dto/product.dto';
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
@@ -41,13 +41,16 @@ export class ProductsController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() payload: any): Promise<any> {
+  async create(@Body() payload: createProductDto): Promise<any> {
     const newProduct = await this.productsService.create(payload);
     return newProduct;
   }
   @Put(':id')
   @HttpCode(HttpStatus.OK)
-  async update(@Param('id') id: number, @Body() payload: any): Promise<any> {
+  async update(
+    @Param('id') id: number,
+    @Body() payload: updateProductDto,
+  ): Promise<updateProductDto> {
     const product = await this.productsService.getOne(id);
     if (product) {
       const productUpdated = await this.productsService.update(id, payload);
